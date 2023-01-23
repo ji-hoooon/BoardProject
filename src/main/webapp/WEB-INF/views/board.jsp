@@ -1,125 +1,177 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-    
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@ page session="true"%>
+<c:set var="loginId" value="${sessionScope.id}"/>
+<c:set var="loginOutLink" value="${loginId=='' ? '/login/login' : '/login/logout'}"/>
+<c:set var="loginOut" value="${loginId=='' ? 'Login' : 'ID='+=loginId}"/>
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="UTF-8">
-    <title>fastcampus</title>
-    <link rel="stylesheet" href="<c:url value='/css/menu.css'/>">
-	<script src="https://code.jquery.com/jquery-3.6.3.js"></script>
+	<title>fastcampus</title>
+	<link rel="stylesheet" href="<c:url value='/css/menu.css'/>">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+	<style>
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+			font-family: "Noto Sans KR", sans-serif;
+		}
+
+		.container {
+			width : 50%;
+			margin : auto;
+		}
+
+		.writing-header {
+			position: relative;
+			margin: 20px 0 0 0;
+			padding-bottom: 10px;
+			border-bottom: 1px solid #323232;
+		}
+
+		input {
+			width: 100%;
+			height: 35px;
+			margin: 5px 0px 10px 0px;
+			border: 1px solid #e9e8e8;
+			padding: 8px;
+			background: #f8f8f8;
+			outline-color: #e6e6e6;
+		}
+
+		textarea {
+			width: 100%;
+			background: #f8f8f8;
+			margin: 5px 0px 10px 0px;
+			border: 1px solid #e9e8e8;
+			resize: none;
+			padding: 8px;
+			outline-color: #e6e6e6;
+		}
+
+		.frm {
+			width:100%;
+		}
+		.btn {
+			background-color: rgb(236, 236, 236); /* Blue background */
+			border: none; /* Remove borders */
+			color: black; /* White text */
+			padding: 6px 12px; /* Some padding */
+			font-size: 16px; /* Set a font size */
+			cursor: pointer; /* Mouse pointer on hover */
+			border-radius: 5px;
+		}
+
+		.btn:hover {
+			text-decoration: underline;
+		}
+	</style>
 </head>
 <body>
 <div id="menu">
 	<ul>
-	    <li id="logo">fastcampus</li>
-	    <li><a href="<c:url value='/'/>">Home</a></li>
-	    <li><a href="<c:url value='/board/list'/>">Board</a></li>
-	    <li><a href="<c:url value='/login/login'/>">login</a></li>    
-	    <li><a href="<c:url value='/register/add'/>">Sign in</a></li>
-	    <li><a href=""><i class="fas fa-search small"></i></a></li>
-	</ul> 
+		<li id="logo">fastcampus</li>
+		<li><a href="<c:url value='/'/>">Home</a></li>
+		<li><a href="<c:url value='/board/list'/>">Board</a></li>
+		<li><a href="<c:url value='${loginOutLink}'/>">${loginOut}</a></li>
+		<li><a href="<c:url value='/register/add'/>">Sign in</a></li>
+		<li><a href=""><i class="fa fa-search"></i></a></li>
+	</ul>
 </div>
-<div style="text-align:center">
-
-	<h2>게시물 ${mode=="new" ? "글쓰기" : "읽기"}</h2>
-	<form action="" id="form">
-		<input type="hidden" name="bno" value="${boardDto.bno}" ${mode=="new" ? '' : 'readonly="readonly"'} >
-		<input type="text" name="title"value="${boardDto.title}"${mode=="new" ? '' : 'readonly="readonly"'}>
-		<textarea name="content" id="" cols="30" rows="10" ${mode=="new" ? '' : 'readonly="readonly"'} >${boardDto.content}</textarea>
-		<button type="button" id="writeBtn" class="btn">글쓰기</button>
-		<button type="button" id="modifyBtn" class="btn">수정</button>
-		<button type="button" id="removeBtn" class="btn">삭제</button>
-		<button type="button" id="listBtn" class="btn">목록</button>
-	</form>
-
-	</div>
 <script>
-	let msg="${msg}" //get의 경우 파라미터로 전달
-	if(msg=="WRT_ERR") alert("등록에 실패했습니다.")
-	if(msg=="UPDATE_ERR") alert("수정에 실패했습니다.")
+	let msg = "${msg}";
+	if(msg=="WRT_ERR") alert("게시물 등록에 실패하였습니다. 다시 시도해 주세요.");
+	if(msg=="MOD_ERR") alert("게시물 수정에 실패하였습니다. 다시 시도해 주세요.");
 </script>
+<div class="container">
+	<h2 class="writing-header">게시판 ${mode=="new" ? "글쓰기" : "읽기"}</h2>
+	<form id="form" class="frm" action="" method="post">
+		<input type="hidden" name="bno" value="${boardDto.bno}">
+
+		<input name="title" type="text" value="${boardDto.title}" placeholder="  제목을 입력해 주세요." ${mode=="new" ? "" : "readonly='readonly'"}><br>
+		<textarea name="content" rows="20" placeholder=" 내용을 입력해 주세요." ${mode=="new" ? "" : "readonly='readonly'"}>${boardDto.content}</textarea><br>
+
+
+		<c:if test="${mode eq 'new'}">
+			<button type="button" id="writeBtn" class="btn btn-write"><i class="fa fa-pencil"></i> 등록</button>
+		</c:if>
+		<c:if test="${mode ne 'new'}">
+			<button type="button" id="writeNewBtn" class="btn btn-write"><i class="fa fa-pencil"></i> 글쓰기</button>
+		</c:if>
+		<c:if test="${boardDto.writer eq loginId}">
+			<button type="button" id="modifyBtn" class="btn btn-modify"><i class="fa fa-edit"></i> 수정</button>
+			<button type="button" id="removeBtn" class="btn btn-remove"><i class="fa fa-trash"></i> 삭제</button>
+		</c:if>
+		<button type="button" id="listBtn" class="btn btn-list"><i class="fa fa-bars"></i> 목록</button>
+	</form>
 </div>
-
 <script>
-	//브라우저가 DOM 로딩완료시 document.ready 실행
-	//: html의 내용을 읽고 변경하기 위해서 사용
-	$(document).ready(function (){//main
-		//목록 버튼 처리
-		//: id의 요소 찾는 경우 css의 셀렉터와 동일하게 '#'
-		$('#listBtn').on("click", function (){
-			alert("listBtn clicked")
-			location.href="<c:url value='/board/list'/>?page=${page}&pageSize=${pageSize}";
+	$(document).ready(function(){
+		let formCheck = function() {
+			let form = document.getElementById("form");
+			if(form.title.value=="") {
+				alert("제목을 입력해 주세요.");
+				form.title.focus();
+				return false;
+			}
+
+			if(form.content.value=="") {
+				alert("내용을 입력해 주세요.");
+				form.content.focus();
+				return false;
+			}
+			return true;
+		}
+
+		$("#writeNewBtn").on("click", function(){
+			location.href="<c:url value='/board/write'/>";
 		});
-	});
 
-	$(document).ready(function (){//main
-		//삭제 버튼 처리 -> POST 처리
-		//: id의 요소 찾는 경우 css의 셀렉터와 동일하게 '#'
-		$('#removeBtn').on("click", function (){
-			if(!confirm("정말로 삭제하시겠습니까?")) return;
-			alert("removeBtn clicked")
-			//id가 form인 요소에 대한 참조를 얻어서 객체를 가져온다.
-			let form= $('#form');
-			//action을 정해주기 위해 form이라는 변수에 속성으로 지정
-			//:action을 '/board/remove'로 설정
-			form.attr("action", "<c:url value='/board/remove'/>?page=${page}&pageSize=${pageSize}");
-
-			//:method를 post로 설정
-			form.attr("method", "post");
-
-			form.submit();
-		});
-	});
-
-	$(document).ready(function (){//main
-		//등록 버튼 처리 -> POST 처리
-		//: id의 요소 찾는 경우 css의 셀렉터와 동일하게 '#'
-		$('#writeBtn').on("click", function (){
-			// if(!confirm("정말로 등록하시겠습니까?")) return;
-			alert("removeBtn clicked")
-			//id가 form인 요소에 대한 참조를 얻어서 객체를 가져온다.
-			let form= $('#form');
-			//action을 정해주기 위해 form이라는 변수에 속성으로 지정
-			//:action을 '/board/write'로 설정
+		$("#writeBtn").on("click", function(){
+			let form = $("#form");
 			form.attr("action", "<c:url value='/board/write'/>");
-
-			//:method를 post로 설정
 			form.attr("method", "post");
 
-			form.submit();
+			if(formCheck())
+				form.submit();
 		});
-	});
 
-	$(document).ready(function (){//main
-		//수정 버튼 처리 -> POST 처리
-		//: id의 요소 찾는 경우 css의 셀렉터와 동일하게 '#'
-		$('#modifyBtn').on("click", function (){
-			alert("modifyBtn clicked")
+		$("#modifyBtn").on("click", function(){
+			let form = $("#form");
+			let isReadonly = $("input[name=title]").attr('readonly');
 
-			//1. 읽기 상태면 수정 상태로 변경
-			let form= $('#form');
-			//input 태그의 name이 title인 속성의 readonly 여부 저장
-			let isReadOnly =$("input[name=title]").attr('readonly');
-			if(isReadOnly=='readonly'){
+			// 1. 읽기 상태이면, 수정 상태로 변경
+			if(isReadonly=='readonly') {
+				$(".writing-header").html("게시판 수정");
 				$("input[name=title]").attr('readonly', false);
 				$("textarea").attr('readonly', false);
-				$("modifyBtn").html("등록"); //버튼의 내용 변경
-				$("h2").html("게시물 수정");
-				//전송되지않고 리턴되도록
+				$("#modifyBtn").html("<i class='fa fa-pencil'></i> 등록");
 				return;
 			}
-			//2. 수정 상태이면, 수정된 내용을 서버로 전송
-			//id가 form인 요소에 대한 참조를 얻어서 객체를 가져온다.
-			//action을 정해주기 위해 form이라는 변수에 속성으로 지정
-			//:action을 '/board/update'로 설정
-			form.attr("action", "<c:url value='/board/modify'/>?page=${page}&pageSize=${pageSize}");
-			//:method를 post로 설정
+
+			// 2. 수정 상태이면, 수정된 내용을 서버로 전송
+			form.attr("action", "<c:url value='/board/modify?page=${page}&pageSize=${pageSize}'/>");
+			form.attr("method", "post");
+			if(formCheck())
+				form.submit();
+		});
+
+		$("#removeBtn").on("click", function(){
+			if(!confirm("정말로 삭제하시겠습니까?")) return;
+
+			let form = $("#form");
+			form.attr("action", "<c:url value='/board/remove?page=${page}&pageSize=${pageSize}'/>");
 			form.attr("method", "post");
 			form.submit();
 		});
+
+		$("#listBtn").on("click", function(){
+			location.href="<c:url value='/board/list?page=${page}&pageSize=${pageSize}'/>";
+		});
 	});
 </script>
-
 </body>
 </html>
