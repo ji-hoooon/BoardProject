@@ -184,6 +184,14 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- SQL 쿼리 확인을 위해 의존성 추가-->
+		<!-- https://mvnrepository.com/artifact/org.bgee.log4jdbc-log4j2/log4jdbc-log4j2-jdbc4.1 -->
+		<dependency>
+			<groupId>org.bgee.log4jdbc-log4j2</groupId>
+			<artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
+			<version>1.16</version>
+		</dependency>
+
 <!--		&lt;!&ndash; MyBatis 의존성 추가&ndash;&gt;-->
 <!--		&lt;!&ndash; https://mvnrepository.com/artifact/org.mybatis/mybatis &ndash;&gt;-->
 <!--		<dependency>-->

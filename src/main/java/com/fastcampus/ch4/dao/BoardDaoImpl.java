@@ -74,6 +74,7 @@ public class BoardDaoImpl implements BoardDao {
     public int searchResultCnt(SearchCondition sc) throws Exception {
         System.out.println("sc in searchResultCnt() = " + sc);
         System.out.println("session = " + session);
+        System.out.println("sc = " + sc);
         return session.selectOne(namespace+"searchResultCnt", sc);
     } // T selectOne(String statement, Object parameter)
 

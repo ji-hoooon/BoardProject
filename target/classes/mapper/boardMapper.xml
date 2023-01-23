@@ -36,6 +36,10 @@
         SELECT bno, title, content, writer, view_cnt, comment_cnt, reg_date
         FROM board
     </sql>
+    <sql id="selectCountFromBoard">
+        SELECT count(*)
+        FROM board
+    </sql>
 
     <select id="select" parameterType="int" resultType="BoardDto">
         <include refid="selectFromBoard"/>
@@ -67,5 +71,38 @@
         SET   view_cnt = view_cnt + 1
         WHERE bno = #{bno}
     </update>
+<sql id="searchCondition">
+    <choose>
+        <when test='option=="T"'>
+            and title like concat('%', #{keyword}, '%')
+        </when>
+        <when test='option=="W"'>
+            and writer like concat('%', #{keyword}, '%')
+        </when>
+        <otherwise>
+            and title like concat('%', #{keyword}, '%')
+            OR content like concat('%', #{keyword}, '%')
+        </otherwise>
+    </choose>
+</sql>
+    <!-- 검색 기능 추가-->
+    <!-- 파라미터 타입을 SearchCondition 객체로 받아서 옵션을 넣는다.-->
+<!--    SearchCondition을 패키지명 없이 사용하기 위해 config에서 별명 추가-->
+    <select id="searchSelectPage" parameterType="SearchCondition" resultType="BoardDto">
+        <include refid="selectFromBoard"/>
+        where true
+        <include refid="searchCondition"></include>
+        ORDER BY reg_date DESC, bno DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+<!--페이징을 하기위해 검색 결과 개수 구하기-->
+    <select id="searchResultCnt" parameterType="SearchCondition" resultType="int">
+    <include refid="selectCountFromBoard"></include>
+        WHERE true
+        <include refid="searchCondition"></include>
+    </select>
+
+    <!-- 동적쿼리는 직접 작성하기 전에 미리 조건식에 해당하는 식들을 테스트 해본다음에 동적쿼리를 추가하는 방식으로 작성한다.-->
+
 
 </mapper>

@@ -1,6 +1,7 @@
 package com.fastcampus.ch4.dao;
 
 import com.fastcampus.ch4.domain.BoardDto;
+import com.fastcampus.ch4.domain.SearchCondition;
 import com.fastcampus.ch4.domain.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +21,43 @@ public class BoardDaoImplTest {
 
     @Autowired
     BoardDao boardDao;
+
+    @Test
+    public void searchSelectPageTest() throws Exception {
+        boardDao.deleteAll();
+        for(int i=1;i<=20;i++){
+            BoardDto boardDto= new BoardDto("title"+i, "asdfasdf", "asdf"+i);
+            boardDao.insert(boardDto);
+        }
+        SearchCondition sc = new SearchCondition(1, 10, "title2", "T");
+        List<BoardDto> list = boardDao.searchSelectPage(sc);
+        System.out.println("list = " + list);
+        assertTrue(list.size()==2); //1-20, title2, title20
+
+        sc = new SearchCondition(1, 10, "asdf2", "W");  //asdf2%
+        list = boardDao.searchSelectPage(sc);
+        System.out.println("list = " + list);
+        assertTrue(list.size()==2); //1-20, asdf2, asdf20
+    }
+    @Test
+    public void searchSelectCntTest() throws Exception {
+        boardDao.deleteAll();
+        for(int i=1;i<=20;i++){
+            BoardDto boardDto= new BoardDto("title"+i, "asdfasdf", "asdf"+i );
+            boardDao.insert(boardDto);
+        }
+        SearchCondition sc = new SearchCondition(1, 10, "title2", "T");
+        int cnt = boardDao.searchResultCnt(sc);
+        System.out.println("cnt = " + cnt);
+        assertTrue(cnt==2); //title2, title20
+
+        sc = new SearchCondition(1, 10, "asdf2", "W");  //asdf2%
+        cnt = boardDao.searchResultCnt(sc);
+        System.out.println("cnt = " + cnt);
+        assertTrue(cnt==2); //1-20, asdf2, asdf20
+    }
+
+
 
     @Test
     public void InsertTestData() throws Exception{
@@ -217,5 +255,7 @@ public class BoardDaoImplTest {
         assertTrue(boardDto!=null);
         assertTrue(boardDto.getView_cnt() == 2);
     }
+
+
 
 }
