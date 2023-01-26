@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.*;
 import java.util.*;
 
 @Service
-public class CommentService{
+public class CommentServiceImpl implements CommentService {
 
     //댓글 추가 및 삭제시 게시판DAO에도 영향을 미친다.
     //: 댓글 추가시 게시판의 comment_cnt+1

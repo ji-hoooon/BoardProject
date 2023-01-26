@@ -1,6 +1,7 @@
 package com.fastcampus.ch4.controller;
 
 import java.net.URLEncoder;
+import java.util.Date;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -36,11 +37,11 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(String id, String pwd, String toURL, boolean rememberId,
+    public String login(HttpSession session,String id, String pwd, String toURL, boolean rememberId,
                         HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         // 1. id와 pwd를 확인
-        if(!loginCheck(id, pwd)) {
+        if(!loginCheck(id, pwd, session)) {
             // 2-1   일치하지 않으면, loginForm으로 이동
             String msg = URLEncoder.encode("id 또는 pwd가 일치하지 않습니다.", "utf-8");
 
@@ -48,8 +49,8 @@ public class LoginController {
         }
         // 2-2. id와 pwd가 일치하면,
         //  세션 객체를 얻어오기
-        HttpSession session = request.getSession();
-        //  세션 객체에 id를 저장
+        session = request.getSession();
+        //  세션 객체에 id를 저장, 생년월일도 저장
         session.setAttribute("id", id);
 
         if(rememberId) {
@@ -70,11 +71,18 @@ public class LoginController {
         return "redirect:"+toURL;
     }
 
-    private boolean loginCheck(String id, String pwd) {
+    private boolean loginCheck(String id, String pwd, HttpSession session) {
         User user = null;
 
         try {
             user = userDao.selectUser(id);
+            Date date = new Date();
+            if(date.getYear()- user.getBirth().getYear()>=20){
+                session.setAttribute("adult", true);
+            }else{
+                session.setAttribute("adult", false);
+            }
+            System.out.println("성인여부 "+session.getAttribute("adult"));
         } catch (Exception e) {
             e.printStackTrace();
             return false;

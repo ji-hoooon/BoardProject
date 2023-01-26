@@ -5,7 +5,6 @@ import com.fastcampus.ch4.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -14,7 +13,7 @@ import java.util.List;
 //@Controller
 //@ResponseBody
 @RestController
-public class CommentController {
+public class CommentController2 {
     @Autowired
     CommentService service;
 
@@ -67,8 +66,9 @@ public class CommentController {
         }
     }
 
-    // 지정된 댓글을 삭제하는 메서드
+    // 지정된 댓글을 삭제하는 메서드로 URI로 작성되었으므로 {}으로 감싸줘야한다.
     @DeleteMapping("/comments/{cno}")  // DELETE /comments/1?bno=1085  <-- 삭제할 댓글 번호
+    //: 맵핑된 uri의 일부를 읽어오기 위해서는 @PathVariable 어노테이션을 이용해야 한다. (쿼리스트링이 아닌경우 필요)
     public ResponseEntity<String> remove(@PathVariable Integer cno, Integer bno, HttpSession session) {
 //        String commenter = (String)session.getAttribute("id");
         String commenter = "asdf";

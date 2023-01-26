@@ -4,7 +4,7 @@
 
 <mapper namespace="com.fastcampus.ch4.dao.BoardMapper">
     <select id="count" resultType="int">
-        SELECT count(*) FROM board
+        <include refid="selectCountFromBoard"></include>
     </select>
 
     <delete id="deleteAll">
